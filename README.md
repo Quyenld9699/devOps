@@ -110,3 +110,11 @@ After run nginx vault can only access by domain. Because certificate of domain.
 ```bash
 export VAULT_ADDR='https://vault.quyenvip.click'
 ```
+
+## Initialize Vault
+
+```bash
+vault operator init
+```
+
+Read more in [https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault](https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault)
