@@ -118,3 +118,20 @@ vault operator init
 ```
 
 Read more in [https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault](https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault)
+
+## Get data secret through API
+
+Login
+
+```bash
+curl --request POST --data '{"password": "password"}' https://vault.quyenvip.click/v1/auth/userpass/login/username
+```
+
+fetch data
+
+```bash
+curl --header "X-Vault-Token: access-token" https://vault.quyenvip.click/v1/path_to_data
+```
+
+Example:
+![Example](img/Login-getdata-API-%20vault.png)
