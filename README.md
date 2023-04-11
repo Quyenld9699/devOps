@@ -122,7 +122,9 @@ Read more in [https://developer.hashicorp.com/vault/tutorials/getting-started/ge
 ## Create Policy and assign for someones
 
 You have secret _kv_ in path **keyvalue/hellovault** => get direct in terminal using this path
+
 ![get_sercret](img/get-kv-secret.png)
+
 But the Secret Path data in path **keyvalue/data/hellovault** => write in policy
 Ex:
 Named this policy is: "my-policy-1"
