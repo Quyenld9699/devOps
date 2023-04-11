@@ -119,6 +119,26 @@ vault operator init
 
 Read more in [https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault](https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault)
 
+## Create Policy and assign for someones
+
+You have secret _kv_ in path **keyvalue/hellovault** => get direct in terminal using this path
+![get_sercret](img/get-kv-secret.png)
+But the Secret Path data in path **keyvalue/data/hellovault** => write in policy
+Ex:
+Named this policy is: "my-policy-1"
+
+```hcl
+path "keyvalue/data/hellovault" {
+	capabilities = ["read"]
+}
+```
+
+Assgin above policy for user ex: `quyenld`
+
+```bash
+vault write auth/userpass/users/quyenld policies="my-policy-1"
+```
+
 ## Get data secret through API
 
 Login
