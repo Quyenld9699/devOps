@@ -157,3 +157,27 @@ curl --header "X-Vault-Token: access-token" https://vault.quyenvip.click/v1/path
 
 Example:
 ![Example](img/Login-getdata-API-%20vault.png)
+
+## Seal/Unseal
+
+Unseal, after unseal you need login
+
+```bash
+vault operator unseal
+```
+
+Seal: only root user.
+
+```bash
+vault operator seal
+```
+
+This lets a single operator lock down the Vault in an emergency without consulting other operators.
+
+When the Vault is sealed again, it clears all of its state (including the encryption key) from memory. The Vault is secure and locked down from access.
+
+## Stop the server
+
+```bash
+pgrep -f vault | xargs kill
+```
