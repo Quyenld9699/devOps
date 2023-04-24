@@ -181,3 +181,33 @@ When the Vault is sealed again, it clears all of its state (including the encryp
 ```bash
 pgrep -f vault | xargs kill
 ```
+
+## Authen with AppRole method
+
+Enable method
+
+```bash
+vault auth enable approle
+```
+
+Create one
+
+```bash
+vault write auth/approle/role/jenkins-role token_num_uses=0 secret_id_num_uses=0 policies="jenkins"
+```
+
+-   _jenkins-role_ : name of approle
+-   _token_num_uses = 0_ : token created will be use unlimited amount of time
+-   _secret_id_num_uses = 0_ : id created will be use unlimited amount of time
+
+Extract role id
+
+```bash
+vault read auth/approle/role/jenkins-role/role-id
+```
+
+Write secret-id
+
+```bash
+vault write -f auth/approle/role/jenkins-role/secret-id
+```
