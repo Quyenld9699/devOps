@@ -7,3 +7,5 @@ Each topic will be pushed to a branch.
 **[Jenkins](https://github.com/Quyenld9699/devOps/tree/jenkins)**
 
 **[Vault HashiCorp](https://github.com/Quyenld9699/devOps/tree/vault)**
+
+**[ZSH terminal](https://github.com/Quyenld9699/devOps/tree/zsh-window-terminal)**
