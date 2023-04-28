@@ -1,215 +1,57 @@
-# Deploy Vault
+# Install zsh terminal for window
 
-Need: domain, nginx, docker-compose, certs
+ubuntu terminal on window like this
 
-## Install Vault
+<img src="img/wsl-ubuntu.png">
 
-```bash
-wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-
-sudo apt update && sudo apt install vault
-```
-
-## Deploy production Vault
-
-Prepare `.hcl` file
-
-```hcl
-    disable_mlock = true
-    ui = true
-
-    listener "tcp" {
-        address     = "0.0.0.0:8200"
-        tls_cert_file = "/root/vault/certs/domain.crt"
-        tls_key_file = "/root/vault/certs/domain.key"
-    }
-
-    storage "file" {
-        path = "/root/vault/data"
-    }
-
-    api_addr = "http://127.0.0.1:8200"
-    cluster_addr = "https://127.0.0.1:8201"
-```
-
-Command:
+## Install ZSH
 
 ```bash
-    vault server -config=file-config.hcl
+sudo apt update && sudo apt upgrade -y
 ```
-
-Read more in [`https://developer.hashicorp.com/vault/docs/configuration`](https://developer.hashicorp.com/vault/docs/configuration)
-
-## Download certificate from cloudflare (client-certificates)
-
-2 file named: domain.crt, domain.key
-
-## Config nginx
-
-Need map domain `ex: vault.quyenvip.click` to `port 8200` on server vault. This port is `ssl port`
-
-```
-server {
-    listen 80;
-    listen [::]:80;
-    server_name vault.quyenvip.click;
-
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    server_name vault.quyenvip.click;
-
-    ssl_certificate /etc/certs/domain.crt;
-    ssl_certificate_key /etc/certs/domain.key;
-
-    location / {
-        proxy_pass https://10.15.0.10:8200;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_ssl_verify off;
-    }
-}
-```
-
-`/etc/certs/domain.crt` and `/etc/certs/domain.key` is path in container.
-
-Write docker-compose file
-
-```
-version: "3"
-
-services:
-  nginx:
-    image: nginx:latest
-    container_name: nginx-vault
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./config.conf:/etc/nginx/conf.d/vault.conf
-      - /root/vault/certs:/etc/certs
-```
-
-Run nginx
 
 ```bash
-    docker-compose up -d
+sudo apt-get install zsh
 ```
 
-## Export env of vault
-
-After run nginx vault can only access by domain. Because certificate of domain.
+Make _zsh_ the default shell with following command:
 
 ```bash
-export VAULT_ADDR='https://vault.quyenvip.click'
+chsh -s /usr/bin/zsh
 ```
 
-## Initialize Vault
+Restart the Ubuntu app and you should be greeted with following screen:
+
+<img src="img/zsh_welcome_ubuntu.png">
+
+## Install Oh my ZSH
+
+Next, lets install 'OH MY ZSH' with following command:
 
 ```bash
-vault operator init
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 ```
 
-Read more in [https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault](https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy#initializing-the-vault)
+Below is the screenshot of completed installation:
+<img src="img/oh_my_zsh_installed_ubuntu.png">
 
-## Create Policy and assign for someones
+## PowerLevel10k
 
-You have secret _kv_ (kv engine version2) in path **keyvalue/hellovault** => get direct in terminal using this path
+Install the recommended font 'Meslo Nerd Font':
+Download font in path /font
 
-![get_sercret](img/get-kv-secret.png)
+Choose **Property** on terminal and select font "MesloLGS NF"
 
-But the Secret Path data in path **keyvalue/data/hellovault** => write in policy
-
-_(but kv version1 just is: **keyvalue/hellovault**)_
-
-Ex: Named this policy is: "my-policy-1"
-
-```hcl
-path "keyvalue/data/hellovault" {
-	capabilities = ["read"]
-}
-```
-
-Assgin above policy for user ex: `quyenld`
+Installation of PowerLevel10k for Oh My Zsh:
 
 ```bash
-vault write auth/userpass/users/quyenld policies="my-policy-1"
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
 ```
-
-## Get data secret through API
-
-Login
 
 ```bash
-curl --request POST --data '{"password": "password"}' https://vault.quyenvip.click/v1/auth/userpass/login/username
+nano ~/.zshrc.
 ```
 
-fetch data
+Set **ZSH_THEME="powerlevel10k/powerlevel10k"** in `~/.zshrc.`
 
-```bash
-curl --header "X-Vault-Token: access-token" https://vault.quyenvip.click/v1/path_to_data
-```
-
-Example:
-![Example](img/Login-getdata-API-%20vault.png)
-
-## Seal/Unseal
-
-Unseal, after unseal you need login
-
-```bash
-vault operator unseal
-```
-
-Seal: only root user.
-
-```bash
-vault operator seal
-```
-
-This lets a single operator lock down the Vault in an emergency without consulting other operators.
-
-When the Vault is sealed again, it clears all of its state (including the encryption key) from memory. The Vault is secure and locked down from access.
-
-## Stop the server
-
-```bash
-pgrep -f vault | xargs kill
-```
-
-## Authen with AppRole method
-
-Enable method
-
-```bash
-vault auth enable approle
-```
-
-Create one
-
-```bash
-vault write auth/approle/role/jenkins-role token_num_uses=0 secret_id_num_uses=0 policies="jenkins"
-```
-
--   _jenkins-role_ : name of approle
--   _token_num_uses = 0_ : token created will be use unlimited amount of time
--   _secret_id_num_uses = 0_ : id created will be use unlimited amount of time
-
-Extract role id
-
-```bash
-vault read auth/approle/role/jenkins-role/role-id
-```
-
-Write secret-id
-
-```bash
-vault write -f auth/approle/role/jenkins-role/secret-id
-```
+Restart the Ubuntu app.
