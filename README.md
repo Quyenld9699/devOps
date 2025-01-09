@@ -29,7 +29,7 @@ Restart the Ubuntu app and you should be greeted with following screen:
 Next, lets install 'OH MY ZSH' with following command:
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
 Below is the screenshot of completed installation:
@@ -52,6 +52,28 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/the
 nano ~/.zshrc.
 ```
 
-Set **ZSH_THEME="powerlevel10k/powerlevel10k"** in `~/.zshrc.`
+Set **ZSH_THEME="powerlevel10k/powerlevel10k"** in `~/.zshrc`
 
 Restart the Ubuntu app.
+
+If you want to change selection after setting, type:
+
+```bash
+p10k configure
+```
+
+Install in gitbash: see in *https://gist.github.com/fworks/af4c896c9de47d827d4caa6fd7154b6b*
+
+to set default terminal: 
+```bash
+nano ~/.bash_profile 
+```
+
+content is: 
+```txt
+# Launch Zsh
+if [ -t 1 ]; then
+exec zsh
+fi
+```
+
