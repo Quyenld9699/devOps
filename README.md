@@ -11,3 +11,5 @@ Each topic will be pushed to a branch.
 **[ZSH terminal](https://github.com/Quyenld9699/devOps/tree/zsh-window-terminal)**
 
 **[Prometheus and Grafana](https://github.com/Quyenld9699/devOps/tree/prometheus-grafana)**
+
+**[Reset Ubuntu WSL on window](https://github.com/Quyenld9699/devOps/tree/reset-ubuntu-wsl)**
